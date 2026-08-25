@@ -2,8 +2,10 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Sidebar } from './components/layout/Sidebar';
 import { Navbar } from './components/layout/Navbar';
-import { StudentListPage } from './features/academic/StudentListPage';
-import { AdmissionFormPage } from './features/academic/AdmissionFormPage';
+import { StudentListPage } from './features/academic/students/StudentListPage';
+import { AdmissionWizardPage } from './features/academic/students/AdmissionWizardPage';
+import { StudentProfilePage } from './features/academic/students/StudentProfilePage';
+import { PromotionTransferPage } from './features/academic/students/PromotionTransferPage';
 import { Toaster } from 'sonner';
 
 const AppLayout: React.FC = () => {
@@ -18,7 +20,9 @@ const AppLayout: React.FC = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/academic/students" replace />} />
             <Route path="/academic/students" element={<StudentListPage />} />
-            <Route path="/academic/admission" element={<AdmissionFormPage />} />
+            <Route path="/academic/students/:id" element={<StudentProfilePage />} />
+            <Route path="/academic/admission" element={<AdmissionWizardPage />} />
+            <Route path="/academic/promotion" element={<PromotionTransferPage />} />
             <Route path="*" element={<Navigate to="/academic/students" replace />} />
           </Routes>
         </main>

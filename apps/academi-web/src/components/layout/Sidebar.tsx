@@ -9,9 +9,14 @@ import {
   FileText, 
   Settings, 
   ChevronRight,
-  School
+  School,
+  FileSpreadsheet,
+  Cpu,
+  Clock,
+  BarChart3,
+  CreditCard
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 interface SidebarProps {
   currentPath: string;
@@ -20,27 +25,42 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
   const menuGroups = [
     {
-      title: 'ACADEMIC',
+      title: 'STUDENT & ADMISSIONS',
       items: [
         { label: 'Student Directory', path: '/academic/students', icon: Users },
         { label: 'New Admission', path: '/academic/admission', icon: GraduationCap },
+        { label: 'Bulk Promotion', path: '/academic/promotion', icon: ChevronRight },
+      ],
+    },
+    {
+      title: 'ACADEMIC STRUCTURE',
+      items: [
         { label: 'Classes & Sections', path: '/academic/classes', icon: School },
-        { label: 'Subjects & Routine', path: '/academic/subjects', icon: BookOpen },
-        { label: 'Attendance', path: '/academic/attendance', icon: CalendarCheck },
-        { label: 'Exam & Grading', path: '/academic/exams', icon: Award },
+        { label: 'Subject Allocation', path: '/academic/subjects', icon: BookOpen },
+        { label: 'Class Timetable', path: '/academic/routine', icon: Clock },
       ],
     },
     {
-      title: 'ACCOUNTS & FINANCE',
+      title: 'EXAMS & GRADING',
       items: [
-        { label: 'Fee Collection', path: '/accounts/fees', icon: DollarSign },
-        { label: 'Financial Reports', path: '/accounts/reports', icon: FileText },
+        { label: 'Exam Terms & Scales', path: '/academic/exams', icon: Award },
+        { label: 'Spreadsheet Marks Entry', path: '/academic/marks-entry', icon: FileSpreadsheet },
+        { label: '1-Click Result Engine', path: '/academic/result-processing', icon: Cpu },
+        { label: 'Tabulation Sheet', path: '/academic/tabulation', icon: FileText },
       ],
     },
     {
-      title: 'SYSTEM',
+      title: 'ATTENDANCE',
       items: [
-        { label: 'Settings & Rules', path: '/settings', icon: Settings },
+        { label: 'Daily Register', path: '/academic/attendance', icon: CalendarCheck },
+        { label: 'Attendance Analytics', path: '/academic/attendance-reports', icon: BarChart3 },
+      ],
+    },
+    {
+      title: 'FEES & FINANCIALS',
+      items: [
+        { label: 'Fee Counter & Receipt', path: '/accounts/fees', icon: CreditCard },
+        { label: 'Fee Collection Report', path: '/accounts/reports', icon: DollarSign },
       ],
     },
   ];
@@ -68,22 +88,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
             <div className="space-y-1">
               {group.items.map((item) => {
                 const Icon = item.icon;
-                const isActive = currentPath === item.path || currentPath.startsWith(item.path + '/');
+                const isActive = currentPath === item.path;
                 return (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
+                    className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${
                       isActive
                         ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-semibold'
                         : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2.5">
                       <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                       <span>{item.label}</span>
                     </div>
-                    {isActive && <ChevronRight className="w-4 h-4 text-blue-200" />}
                   </Link>
                 );
               })}

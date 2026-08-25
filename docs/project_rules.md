@@ -204,7 +204,12 @@ Infrastructure     → implements Domain interfaces
 
 ---
 
-## 7. Docker Rules
+## 7. Docker & Runtime Rules
+
+### Docker-Only Runtime & Publishing Rule (STRICT)
+- **ALL** microservices, databases (MSSQL), API gateways (YARP), auth servers (Keycloak), message brokers (RabbitMQ), caches (Redis), and frontend applications (React/Nginx) MUST be executed, published, and served strictly inside Docker containers.
+- **Zero Host Machine Execution**: No application service or database runs directly on the host server OS outside of Docker.
+- **Orchestration**: All multi-service running, testing, and deployment MUST be orchestrated via Docker Compose (`docker compose up -d`).
 
 ### Image Naming
 ```

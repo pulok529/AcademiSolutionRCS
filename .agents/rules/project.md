@@ -165,6 +165,15 @@
 
 ---
 
+## Docker-Only Runtime & Publishing Rule (STRICT)
+
+- **Containerized Execution Only**: ALL microservices (.NET Web APIs), database instances (MSSQL), API gateways (YARP), auth servers (Keycloak), message brokers (RabbitMQ), caches (Redis), log aggregators (Seq), and frontend applications (React/Nginx) MUST be executed, published, and served strictly inside Docker containers.
+- **Zero Host Machine Execution**: No application service, background worker, or database should run directly on the host machine OS outside Docker.
+- **Docker Compose Orchestration**: All multi-service running, testing, dev previews, and production deployments MUST be orchestrated via `docker compose up` / `docker compose build`.
+- **Environment Isolation**: All configuration, ports, connection strings, and secrets must be passed through `.env` and `docker-compose.yml` into containers.
+
+---
+
 ## What You Must NEVER Do
 
 - ❌ Suggest or use any technology not listed in `docs/architecture/tech_stack.md`

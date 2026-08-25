@@ -6,6 +6,9 @@ import { Navbar } from './components/layout/Navbar';
 // Auth
 import { LoginPage } from './features/auth/LoginPage';
 
+// Main Dashboard
+import { AcademicDashboardPage } from './features/academic/dashboard/AcademicDashboardPage';
+
 // Student Pages
 import { StudentListPage } from './features/academic/students/StudentListPage';
 import { AdmissionWizardPage } from './features/academic/students/AdmissionWizardPage';
@@ -37,14 +40,18 @@ const AppLayout: React.FC = () => {
   const location = useLocation();
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
       <Sidebar currentPath={location.pathname} />
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar />
         <main className="flex-1">
           <Routes>
-            <Route path="/" element={<Navigate to="/academic/students" replace />} />
+            <Route path="/" element={<Navigate to="/academic/dashboard" replace />} />
+            <Route path="/academic" element={<Navigate to="/academic/dashboard" replace />} />
             
+            {/* Main Academic Dashboard */}
+            <Route path="/academic/dashboard" element={<AcademicDashboardPage />} />
+
             {/* Student Directory */}
             <Route path="/academic/students" element={<StudentListPage />} />
             <Route path="/academic/students/:id" element={<StudentProfilePage />} />
@@ -70,7 +77,7 @@ const AppLayout: React.FC = () => {
             <Route path="/accounts/fees" element={<FeeCollectionCounterPage />} />
             <Route path="/accounts/reports" element={<FeeCollectionReportPage />} />
 
-            <Route path="*" element={<Navigate to="/academic/students" replace />} />
+            <Route path="*" element={<Navigate to="/academic/dashboard" replace />} />
           </Routes>
         </main>
       </div>

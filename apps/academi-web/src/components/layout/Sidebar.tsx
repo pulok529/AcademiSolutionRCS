@@ -8,7 +8,6 @@ import {
   DollarSign, 
   FileText, 
   ChevronDown,
-  ChevronRight,
   School,
   FileSpreadsheet,
   Cpu,
@@ -21,7 +20,10 @@ import {
   Percent,
   Grid,
   ShieldCheck,
-  FolderOpen
+  FolderOpen,
+  LayoutDashboard,
+  ShoppingBag,
+  Sliders
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useThemeStore } from '../../stores/useThemeStore';
@@ -35,6 +37,7 @@ interface MenuItem {
   path?: string;
   icon?: any;
   badge?: string;
+  action?: () => void;
   children?: { label: string; path: string; badge?: string }[];
 }
 
@@ -44,11 +47,12 @@ interface MenuGroup {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
-  const { sidenavColor, sidenavSize, isPinned, togglePinned } = useThemeStore();
+  const { sidenavColor, sidenavSize, isPinned, togglePinned, toggleSettings } = useThemeStore();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
+    'Dashboards': true,
     'Student Management': true,
-    'Academic Structure': true,
-    'Exams & Grading': true,
+    'Academic Structure': false,
+    'Exams & Grading': false,
     'Attendance': false,
     'Fees & Financials': false,
   });
@@ -59,8 +63,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
 
   const menuGroups: MenuGroup[] = [
     {
-      category: 'MAIN DASHBOARD',
+      category: 'MAIN',
       items: [
+        {
+          label: 'Dashboards',
+          icon: LayoutDashboard,
+          children: [
+            { label: 'Academic Dashboard', path: '/academic/dashboard' },
+            { label: 'Ecommerce', path: '#' },
+            { label: 'Analytics', path: '/academic/attendance-reports' },
+            { label: 'CRM Overview', path: '#' },
+            { label: 'Finance', path: '/accounts/reports' },
+          ],
+        },
         {
           label: 'Student Management',
           icon: Users,
@@ -105,24 +120,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
             { label: 'Fee Collection Report', path: '/accounts/reports' },
           ],
         },
-      ],
-    },
-    {
-      category: 'PACES TEMPLATE SUITE',
-      items: [
-        { label: 'Users & Roles', icon: Users, children: [{ label: 'User Directory', path: '#' }, { label: 'Permissions', path: '#' }] },
-        { label: 'Finance Accounts', icon: DollarSign, children: [{ label: 'Transactions', path: '#' }, { label: 'Invoices', path: '#' }] },
-        { label: 'HRM Payroll', icon: Target, children: [{ label: 'Staff List', path: '#' }, { label: 'Salary Slip', path: '#' }] },
-        { label: 'Email Portal', icon: Mail, badge: 'New', path: '#' },
+        { label: 'Email', icon: Mail, badge: 'New', path: '#' },
         { label: 'Support Center', icon: HelpCircle, path: '#' },
+        { label: 'Promo', icon: Percent, path: '#' },
         { label: 'More Apps', icon: Grid, path: '#' },
       ],
     },
     {
       category: 'CUSTOM PAGES',
       items: [
-        { label: 'Pages', icon: FolderOpen, children: [{ label: 'Profile', path: '#' }, { label: 'Settings', path: '#' }] },
+        { label: 'Pages', icon: FolderOpen, children: [{ label: 'Student Profile', path: '/academic/students/1' }, { label: 'Admission Wizard', path: '/academic/admission' }] },
+        { label: 'Plugins', icon: Cpu, children: [{ label: 'ApexCharts', path: '#' }, { label: 'FullCalendar', path: '#' }] },
         { label: 'Authentication', icon: ShieldCheck, children: [{ label: 'Sign In', path: '/login' }] },
+      ],
+    },
+    {
+      category: 'LAYOUTS',
+      items: [
+        { label: 'Layout Options', icon: Sliders, action: toggleSettings, children: [{ label: 'Open Customizer', path: '#' }] },
       ],
     },
   ];
@@ -202,6 +217,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
                   <Link
                     key={item.label}
                     to={item.path || '#'}
+                    onClick={item.action}
                     title={isCompact ? item.label : undefined}
                     className={`flex items-center ${
                       isCompact ? 'justify-center px-0 py-2.5' : 'justify-between px-3 py-2'
@@ -227,7 +243,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
               return (
                 <div key={item.label} className="space-y-1">
                   <button
-                    onClick={() => toggleMenu(item.label)}
+                    onClick={() => {
+                      if (item.action) item.action();
+                      toggleMenu(item.label);
+                    }}
                     title={isCompact ? item.label : undefined}
                     className={`w-full flex items-center ${
                       isCompact ? 'justify-center px-0 py-2.5' : 'justify-between px-3 py-2'
@@ -264,7 +283,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
                         const isSubActive = child.path === currentPath;
                         return (
                           <Link
-                            key={child.path}
+                            key={child.label}
                             to={child.path}
                             className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-all ${
                               isSubActive

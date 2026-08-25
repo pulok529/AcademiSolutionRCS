@@ -1,0 +1,60 @@
+root = true
+
+# ─── All Files ────────────────────────────────────────────────────────────────
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# ─── C# (.NET 9) ─────────────────────────────────────────────────────────────
+[*.{cs,csx}]
+end_of_line = crlf
+indent_style = space
+indent_size = 4
+tab_width = 4
+max_line_length = 120
+
+# ─── TypeScript / JavaScript / React (TSX/JSX) ────────────────────────────────
+[*.{ts,tsx,js,jsx,mjs,cjs}]
+indent_style = space
+indent_size = 2
+tab_width = 2
+max_line_length = 100
+
+# ─── JSON ─────────────────────────────────────────────────────────────────────
+[*.json]
+indent_style = space
+indent_size = 2
+
+# ─── YAML ─────────────────────────────────────────────────────────────────────
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# ─── XML / Config ─────────────────────────────────────────────────────────────
+[*.{xml,config,props,targets,csproj,sln}]
+indent_style = space
+indent_size = 2
+
+# ─── HTML / CSS ───────────────────────────────────────────────────────────────
+[*.{html,css,scss}]
+indent_style = space
+indent_size = 2
+
+# ─── Markdown ─────────────────────────────────────────────────────────────────
+[*.md]
+trim_trailing_whitespace = false
+indent_style = space
+indent_size = 2
+
+# ─── Dockerfile ───────────────────────────────────────────────────────────────
+[Dockerfile*]
+indent_style = space
+indent_size = 4
+
+# ─── Shell / Jenkinsfile ──────────────────────────────────────────────────────
+[*.{sh,bash,Jenkinsfile}]
+end_of_line = lf
+indent_style = space
+indent_size = 4

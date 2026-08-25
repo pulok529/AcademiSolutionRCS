@@ -1,0 +1,150 @@
+###############################################################################
+# AcademiSolutionRCS — .gitignore
+# Covers: .NET 9, React/Vite/Node, Docker, Jenkins, Redis, secrets, IDEs, OS
+###############################################################################
+
+# ─── .NET / ASP.NET Core ──────────────────────────────────────────────────────
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+.vs/
+_ReSharper*/
+*.resharper
+*.DotSettings.user
+TestResults/
+[Tt]emp/
+[Ll]og/
+[Ll]ogs/
+*.ncrunchproject
+*.ncrunchsolution
+nCrunchTemp_*
+publish/
+PublishProfiles/
+*.pubxml
+*.pubxml.user
+*.azurePubxml
+ServiceFabricBackup/
+*.pfx
+*.snk
+BundleConfig.json
+artifacts/
+
+# EF Core migrations temp
+*.mdf
+*.ldf
+*.ndf
+
+# ─── Secrets / Environment ────────────────────────────────────────────────────
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+appsettings.Production.json
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
+secrets.json
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+docker-compose.override.yml
+
+# ─── React / Node / Vite ──────────────────────────────────────────────────────
+node_modules/
+dist/
+dist-ssr/
+*.local
+.cache/
+.parcel-cache/
+.next/
+out/
+build/
+.nuxt/
+.output/
+.vite/
+coverage/
+.nyc_output/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnp/
+.pnp.js
+
+# ─── Docker ───────────────────────────────────────────────────────────────────
+docker-compose.override.yml
+.docker/
+
+# ─── Jenkins ──────────────────────────────────────────────────────────────────
+.jenkins/
+jenkins_home/
+workspace/
+
+# ─── Redis ────────────────────────────────────────────────────────────────────
+dump.rdb
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/
+*.log.*
+
+# ─── JetBrains Rider / IntelliJ ───────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+out/
+.idea_modules/
+
+# ─── Visual Studio Code ───────────────────────────────────────────────────────
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# ─── Visual Studio ────────────────────────────────────────────────────────────
+.vs/
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# ─── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ─── Misc ─────────────────────────────────────────────────────────────────────
+*.bak
+*.tmp
+*.temp
+*.swp
+*.swo
+*~

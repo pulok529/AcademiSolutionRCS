@@ -297,3 +297,17 @@ services:
     networks:
       - academi-network
     restart: unless-stopped
+
+  # ─── React Frontend Application (academi-web) ──────────────────────────────
+  academi-web:
+    build:
+      context: ./apps/academi-web
+      dockerfile: Dockerfile
+    container_name: academi-web
+    ports:
+      - "3000:80"
+    networks:
+      - academi-network
+    restart: unless-stopped
+
+

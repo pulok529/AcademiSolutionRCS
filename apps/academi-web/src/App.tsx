@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Sidebar } from './components/layout/Sidebar';
 import { Navbar } from './components/layout/Navbar';
+
+// Auth
+import { LoginPage } from './features/auth/LoginPage';
 
 // Student Pages
 import { StudentListPage } from './features/academic/students/StudentListPage';
@@ -71,15 +74,23 @@ const AppLayout: React.FC = () => {
           </Routes>
         </main>
       </div>
-      <Toaster position="top-right" richColors />
     </div>
   );
 };
 
 export const App: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+
   return (
     <BrowserRouter>
-      <AppLayout />
+      <Routes>
+        <Route path="/login" element={<LoginPage onLoginSuccess={() => setIsAuthenticated(true)} />} />
+        <Route
+          path="/*"
+          element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
+        />
+      </Routes>
+      <Toaster position="top-right" richColors />
     </BrowserRouter>
   );
 };

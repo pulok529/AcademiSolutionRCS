@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, Bell, User, Settings2, Sun, Moon, Menu } from 'lucide-react';
 import { useThemeStore } from '../../stores/useThemeStore';
-import { TemplateSettingsDrawer } from './TemplateSettingsDrawer';
+import { AdminCustomizerDrawer } from './AdminCustomizerDrawer';
 
 export const Navbar: React.FC = () => {
   const { theme, topbarColor, sidenavSize, setTheme, toggleSettings, setSidenavSize } = useThemeStore();
@@ -47,11 +47,11 @@ export const Navbar: React.FC = () => {
             {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5" />}
           </button>
 
-          {/* Template Settings Gear Icon */}
+          {/* Admin Customizer Gear Icon */}
           <button
             onClick={toggleSettings}
             className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/40 rounded-xl transition-all relative animate-pulse"
-            title="Paces Template Customizer"
+            title="Paces Admin Customizer"
           >
             <Settings2 className="w-5 h-5" />
             <span className="w-2 h-2 bg-blue-600 rounded-full absolute top-1.5 right-1.5 ring-2 ring-white dark:ring-slate-900" />
@@ -78,8 +78,8 @@ export const Navbar: React.FC = () => {
         </div>
       </header>
 
-      {/* Template Settings Offcanvas Drawer */}
-      <TemplateSettingsDrawer />
+      {/* Admin Customizer Offcanvas Drawer */}
+      <AdminCustomizerDrawer />
     </>
   );
 };

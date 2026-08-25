@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   GraduationCap, 
   Users, 
@@ -7,62 +7,122 @@ import {
   Award, 
   DollarSign, 
   FileText, 
+  ChevronDown,
   ChevronRight,
   School,
   FileSpreadsheet,
   Cpu,
   Clock,
   BarChart3,
-  CreditCard
+  CreditCard,
+  Target,
+  Mail,
+  HelpCircle,
+  Percent,
+  Grid,
+  ShieldCheck,
+  FolderOpen
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useThemeStore } from '../../stores/useThemeStore';
 
 interface SidebarProps {
   currentPath: string;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
-  const { sidenavColor, sidenavSize } = useThemeStore();
+interface MenuItem {
+  label: string;
+  path?: string;
+  icon?: any;
+  badge?: string;
+  children?: { label: string; path: string; badge?: string }[];
+}
 
-  const menuGroups = [
+interface MenuGroup {
+  category?: string;
+  items: MenuItem[];
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
+  const { sidenavColor, sidenavSize, isPinned, togglePinned } = useThemeStore();
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
+    'Student Management': true,
+    'Academic Structure': true,
+    'Exams & Grading': true,
+    'Attendance': false,
+    'Fees & Financials': false,
+  });
+
+  const toggleMenu = (title: string) => {
+    setOpenMenus((prev) => ({ ...prev, [title]: !prev[title] }));
+  };
+
+  const menuGroups: MenuGroup[] = [
     {
-      title: 'STUDENT & ADMISSIONS',
+      category: 'MAIN DASHBOARD',
       items: [
-        { label: 'Student Directory', path: '/academic/students', icon: Users },
-        { label: 'New Admission', path: '/academic/admission', icon: GraduationCap },
-        { label: 'Bulk Promotion', path: '/academic/promotion', icon: ChevronRight },
+        {
+          label: 'Student Management',
+          icon: Users,
+          children: [
+            { label: 'Student Directory', path: '/academic/students' },
+            { label: 'New Admission', path: '/academic/admission', badge: 'New' },
+            { label: 'Bulk Promotion', path: '/academic/promotion' },
+          ],
+        },
+        {
+          label: 'Academic Structure',
+          icon: School,
+          children: [
+            { label: 'Classes & Sections', path: '/academic/classes' },
+            { label: 'Subject Allocation', path: '/academic/subjects' },
+            { label: 'Class Routine', path: '/academic/routine' },
+          ],
+        },
+        {
+          label: 'Exams & Grading',
+          icon: Award,
+          children: [
+            { label: 'Exam Terms & Scales', path: '/academic/exams' },
+            { label: 'Spreadsheet Marks Entry', path: '/academic/marks-entry' },
+            { label: '1-Click Result Engine', path: '/academic/result-processing', badge: 'Pro' },
+            { label: 'Tabulation Sheet', path: '/academic/tabulation' },
+          ],
+        },
+        {
+          label: 'Attendance',
+          icon: CalendarCheck,
+          children: [
+            { label: 'Daily Register', path: '/academic/attendance' },
+            { label: 'Attendance Analytics', path: '/academic/attendance-reports' },
+          ],
+        },
+        {
+          label: 'Fees & Financials',
+          icon: CreditCard,
+          children: [
+            { label: 'Fee Counter & Receipt', path: '/accounts/fees', badge: 'POS' },
+            { label: 'Fee Collection Report', path: '/accounts/reports' },
+          ],
+        },
       ],
     },
     {
-      title: 'ACADEMIC STRUCTURE',
+      category: 'PACES TEMPLATE SUITE',
       items: [
-        { label: 'Classes & Sections', path: '/academic/classes', icon: School },
-        { label: 'Subject Allocation', path: '/academic/subjects', icon: BookOpen },
-        { label: 'Class Timetable', path: '/academic/routine', icon: Clock },
+        { label: 'Users & Roles', icon: Users, children: [{ label: 'User Directory', path: '#' }, { label: 'Permissions', path: '#' }] },
+        { label: 'Finance Accounts', icon: DollarSign, children: [{ label: 'Transactions', path: '#' }, { label: 'Invoices', path: '#' }] },
+        { label: 'HRM Payroll', icon: Target, children: [{ label: 'Staff List', path: '#' }, { label: 'Salary Slip', path: '#' }] },
+        { label: 'Email Portal', icon: Mail, badge: 'New', path: '#' },
+        { label: 'Support Center', icon: HelpCircle, path: '#' },
+        { label: 'More Apps', icon: Grid, path: '#' },
       ],
     },
     {
-      title: 'EXAMS & GRADING',
+      category: 'CUSTOM PAGES',
       items: [
-        { label: 'Exam Terms & Scales', path: '/academic/exams', icon: Award },
-        { label: 'Spreadsheet Marks Entry', path: '/academic/marks-entry', icon: FileSpreadsheet },
-        { label: '1-Click Result Engine', path: '/academic/result-processing', icon: Cpu },
-        { label: 'Tabulation Sheet', path: '/academic/tabulation', icon: FileText },
-      ],
-    },
-    {
-      title: 'ATTENDANCE',
-      items: [
-        { label: 'Daily Register', path: '/academic/attendance', icon: CalendarCheck },
-        { label: 'Attendance Analytics', path: '/academic/attendance-reports', icon: BarChart3 },
-      ],
-    },
-    {
-      title: 'FEES & FINANCIALS',
-      items: [
-        { label: 'Fee Counter & Receipt', path: '/accounts/fees', icon: CreditCard },
-        { label: 'Fee Collection Report', path: '/accounts/reports', icon: DollarSign },
+        { label: 'Pages', icon: FolderOpen, children: [{ label: 'Profile', path: '#' }, { label: 'Settings', path: '#' }] },
+        { label: 'Authentication', icon: ShieldCheck, children: [{ label: 'Sign In', path: '/login' }] },
       ],
     },
   ];
@@ -89,64 +149,152 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
     <aside
       className={`${
         isCompact ? 'w-20' : 'w-64'
-      } ${getSidenavBgClass()} flex flex-col min-h-screen transition-all duration-300 z-20`}
+      } ${getSidenavBgClass()} flex flex-col min-h-screen transition-all duration-300 z-20 font-sans`}
     >
-      {/* Brand Header */}
-      <div className={`p-5 flex items-center ${isCompact ? 'justify-center' : 'gap-3'} ${getHeaderBgClass()}`}>
-        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-600/30 flex-shrink-0">
-          <GraduationCap className="w-6 h-6" />
-        </div>
-        {!isCompact && (
-          <div>
-            <h1 className="font-bold tracking-wide text-base leading-tight">Academi</h1>
-            <p className="text-[10px] opacity-75 font-medium">School Management</p>
+      {/* Paces Logo Header with Pin Button ⊙ (Matching Screenshot) */}
+      <div className={`p-4 flex items-center justify-between ${getHeaderBgClass()}`}>
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-pink-500 via-purple-600 to-blue-600 flex items-center justify-center text-white font-extrabold text-sm shadow-md">
+            Hı
           </div>
+          {!isCompact && (
+            <div className="flex items-center gap-1.5">
+              <span className="font-extrabold tracking-tight text-lg leading-none">Paces</span>
+              <span className="text-[10px] font-semibold bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded">
+                PRO
+              </span>
+            </div>
+          )}
+        </div>
+
+        {!isCompact && (
+          <button
+            onClick={togglePinned}
+            className={`w-6 h-6 rounded-full border border-slate-500/30 flex items-center justify-center text-xs transition-colors hover:border-white ${
+              isPinned ? 'text-blue-400 font-bold' : 'text-slate-400'
+            }`}
+            title="Toggle Pin Sidebar"
+          >
+            ⊙
+          </button>
         )}
       </div>
 
-      {/* Navigation Menu */}
-      <nav className="flex-1 px-3 py-6 space-y-6 overflow-y-auto">
+      {/* Navigation Accordion List */}
+      <nav className="flex-1 px-3 py-4 space-y-4 overflow-y-auto">
         {menuGroups.map((group, idx) => (
-          <div key={idx}>
-            {!isCompact && (
-              <p className="text-[10px] font-bold opacity-60 tracking-wider px-3 mb-2 uppercase">
-                {group.title}
+          <div key={idx} className="space-y-1">
+            {group.category && !isCompact && (
+              <p className="text-[10px] font-bold opacity-50 tracking-wider px-3 mb-2 uppercase">
+                {group.category}
               </p>
             )}
-            <div className="space-y-1">
-              {group.items.map((item) => {
-                const Icon = item.icon;
-                const isActive = currentPath === item.path;
+
+            {group.items.map((item) => {
+              const Icon = item.icon;
+              const hasChildren = item.children && item.children.length > 0;
+              const isOpen = !!openMenus[item.label];
+              const isChildActive = item.children?.some((c) => c.path === currentPath);
+
+              if (!hasChildren) {
+                const isActive = item.path === currentPath;
                 return (
                   <Link
-                    key={item.path}
-                    to={item.path}
+                    key={item.label}
+                    to={item.path || '#'}
                     title={isCompact ? item.label : undefined}
                     className={`flex items-center ${
-                      isCompact ? 'justify-center px-0 py-3' : 'justify-between px-3 py-2.5'
-                    } rounded-xl text-xs font-semibold transition-all duration-150 ${
+                      isCompact ? 'justify-center px-0 py-2.5' : 'justify-between px-3 py-2'
+                    } rounded-xl text-xs font-semibold transition-all ${
                       isActive
-                        ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-bold'
+                        ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-600/30'
                         : 'opacity-80 hover:opacity-100 hover:bg-white/10'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'opacity-70'}`} />
+                    <div className="flex items-center gap-2.5">
+                      {Icon && <Icon className="w-4 h-4 opacity-80" />}
                       {!isCompact && <span>{item.label}</span>}
                     </div>
+                    {item.badge && !isCompact && (
+                      <span className="bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full">
+                        {item.badge}
+                      </span>
+                    )}
                   </Link>
                 );
-              })}
-            </div>
+              }
+
+              return (
+                <div key={item.label} className="space-y-1">
+                  <button
+                    onClick={() => toggleMenu(item.label)}
+                    title={isCompact ? item.label : undefined}
+                    className={`w-full flex items-center ${
+                      isCompact ? 'justify-center px-0 py-2.5' : 'justify-between px-3 py-2'
+                    } rounded-xl text-xs font-semibold transition-all ${
+                      isChildActive
+                        ? 'text-blue-400 font-bold bg-white/5'
+                        : 'opacity-80 hover:opacity-100 hover:bg-white/10'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      {Icon && <Icon className="w-4 h-4 opacity-80" />}
+                      {!isCompact && <span>{item.label}</span>}
+                    </div>
+                    {!isCompact && (
+                      <div className="flex items-center gap-1.5">
+                        {item.badge && (
+                          <span className="bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full">
+                            {item.badge}
+                          </span>
+                        )}
+                        <ChevronDown
+                          className={`w-3.5 h-3.5 opacity-60 transition-transform duration-200 ${
+                            isOpen ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </div>
+                    )}
+                  </button>
+
+                  {/* Expanded Sub-items (Accordion) */}
+                  {isOpen && !isCompact && (
+                    <div className="pl-9 pr-2 space-y-1 border-l-2 border-slate-700/40 ml-4 py-1">
+                      {item.children?.map((child) => {
+                        const isSubActive = child.path === currentPath;
+                        return (
+                          <Link
+                            key={child.path}
+                            to={child.path}
+                            className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-all ${
+                              isSubActive
+                                ? 'text-white font-bold bg-blue-600/30 border border-blue-500/40'
+                                : 'opacity-70 hover:opacity-100 hover:text-white'
+                            }`}
+                          >
+                            <span>{child.label}</span>
+                            {child.badge && (
+                              <span className="bg-blue-500/30 text-blue-300 text-[9px] font-bold px-1 rounded">
+                                {child.badge}
+                              </span>
+                            )}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         ))}
       </nav>
 
-      {/* Footer Info */}
+      {/* Footer Branding */}
       {!isCompact && (
-        <div className="p-4 border-t border-slate-700/30 text-xs opacity-75 text-center">
-          <p className="font-semibold text-[11px]">Creatrix Soft Tech Ltd</p>
-          <p className="text-[10px] mt-0.5 opacity-70">Paces Theme Engine</p>
+        <div className="p-4 border-t border-slate-700/30 text-xs opacity-70 text-center">
+          <p className="font-bold text-[11px]">Creatrix Soft Tech Ltd</p>
+          <p className="text-[10px] opacity-60 mt-0.5">Paces Admin Suite v1.0</p>
         </div>
       )}
     </aside>

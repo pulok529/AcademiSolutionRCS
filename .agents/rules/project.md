@@ -8,15 +8,20 @@
 
 ---
 
-## CRITICAL RULE: Implementation Plan First
+## CRITICAL RULE: Implementation Plan Always — No Exceptions
 
-> **BEFORE writing any code or making any file changes for a development task:**
+> **FOR EVERY USER PROMPT, regardless of size, complexity, or simplicity:**
 > 1. Create or update `implementation_plan.md` with a detailed plan
 > 2. Present it to the user for review
-> 3. Wait for explicit user approval
-> 4. Only then begin execution
+> 3. **STOP and wait** for explicit user approval or modification instructions
+> 4. Only begin execution when the user says **"start working"** or gives explicit approval
 >
-> Exception: Trivial fixes (typos, formatting, single-line changes) do not need a plan.
+> **ONE EXCEPTION ONLY**: If the user's message itself contains the phrase **"start working"**,
+> skip the plan and begin execution immediately.
+>
+> **This rule overrides everything else.** No prompt is too small or too trivial.
+> Even a one-line request gets a plan first.
+> No assumptions. No "I'll just do it quickly." Always plan → always wait → always execute on approval.
 
 ---
 

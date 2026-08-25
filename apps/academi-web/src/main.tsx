@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import './assets/css/vendors.min.css';
+import './assets/css/app.min.css';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

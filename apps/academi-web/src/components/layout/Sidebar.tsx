@@ -7,7 +7,6 @@ import {
   Award, 
   DollarSign, 
   FileText, 
-  Settings, 
   ChevronRight,
   School,
   FileSpreadsheet,
@@ -17,12 +16,15 @@ import {
   CreditCard
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useThemeStore } from '../../stores/useThemeStore';
 
 interface SidebarProps {
   currentPath: string;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
+  const { sidenavColor, sidenavSize } = useThemeStore();
+
   const menuGroups = [
     {
       title: 'STUDENT & ADMISSIONS',
@@ -65,26 +67,52 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
     },
   ];
 
+  const getSidenavBgClass = () => {
+    if (sidenavColor === 'light') return 'bg-white text-slate-800 border-r border-slate-200';
+    if (sidenavColor === 'gray') return 'bg-slate-800 text-slate-200 border-r border-slate-700';
+    if (sidenavColor === 'gradient') return 'bg-gradient-to-b from-[#1a365d] via-[#1e3a5f] to-[#0f172a] text-white';
+    return 'bg-[#1e3a5f] text-slate-200 shadow-xl';
+  };
+
+  const getHeaderBgClass = () => {
+    if (sidenavColor === 'light') return 'bg-slate-50 border-b border-slate-200 text-slate-900';
+    if (sidenavColor === 'gray') return 'bg-slate-900/60 border-b border-slate-700 text-white';
+    return 'bg-[#162a45] border-b border-slate-700/60 text-white';
+  };
+
+  const isCompact = sidenavSize === 'compact';
+  const isOffcanvas = sidenavSize === 'offcanvas';
+
+  if (isOffcanvas) return null;
+
   return (
-    <aside className="w-64 bg-[#1e3a5f] text-slate-200 flex flex-col min-h-screen shadow-xl">
+    <aside
+      className={`${
+        isCompact ? 'w-20' : 'w-64'
+      } ${getSidenavBgClass()} flex flex-col min-h-screen transition-all duration-300 z-20`}
+    >
       {/* Brand Header */}
-      <div className="p-6 flex items-center gap-3 border-b border-slate-700/60 bg-[#162a45]">
-        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-600/30">
+      <div className={`p-5 flex items-center ${isCompact ? 'justify-center' : 'gap-3'} ${getHeaderBgClass()}`}>
+        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-600/30 flex-shrink-0">
           <GraduationCap className="w-6 h-6" />
         </div>
-        <div>
-          <h1 className="font-bold text-white tracking-wide text-lg leading-tight">Academi</h1>
-          <p className="text-[11px] text-blue-300 font-medium">School Management</p>
-        </div>
+        {!isCompact && (
+          <div>
+            <h1 className="font-bold tracking-wide text-base leading-tight">Academi</h1>
+            <p className="text-[10px] opacity-75 font-medium">School Management</p>
+          </div>
+        )}
       </div>
 
       {/* Navigation Menu */}
-      <nav className="flex-1 px-4 py-6 space-y-6 overflow-y-auto">
+      <nav className="flex-1 px-3 py-6 space-y-6 overflow-y-auto">
         {menuGroups.map((group, idx) => (
           <div key={idx}>
-            <p className="text-[10px] font-bold text-slate-400 tracking-wider px-3 mb-2 uppercase">
-              {group.title}
-            </p>
+            {!isCompact && (
+              <p className="text-[10px] font-bold opacity-60 tracking-wider px-3 mb-2 uppercase">
+                {group.title}
+              </p>
+            )}
             <div className="space-y-1">
               {group.items.map((item) => {
                 const Icon = item.icon;
@@ -93,15 +121,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${
+                    title={isCompact ? item.label : undefined}
+                    className={`flex items-center ${
+                      isCompact ? 'justify-center px-0 py-3' : 'justify-between px-3 py-2.5'
+                    } rounded-xl text-xs font-semibold transition-all duration-150 ${
                       isActive
-                        ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-semibold'
-                        : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                        ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-bold'
+                        : 'opacity-80 hover:opacity-100 hover:bg-white/10'
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                      <span>{item.label}</span>
+                    <div className="flex items-center gap-3">
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'opacity-70'}`} />
+                      {!isCompact && <span>{item.label}</span>}
                     </div>
                   </Link>
                 );
@@ -112,10 +143,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPath }) => {
       </nav>
 
       {/* Footer Info */}
-      <div className="p-4 border-t border-slate-700/50 text-xs text-slate-400 text-center bg-[#162a45]/50">
-        <p className="font-medium text-slate-300">Creatrix Soft Tech Ltd</p>
-        <p className="text-[10px] mt-0.5">v1.0.0 Microservices</p>
-      </div>
+      {!isCompact && (
+        <div className="p-4 border-t border-slate-700/30 text-xs opacity-75 text-center">
+          <p className="font-semibold text-[11px]">Creatrix Soft Tech Ltd</p>
+          <p className="text-[10px] mt-0.5 opacity-70">Paces Theme Engine</p>
+        </div>
+      )}
     </aside>
   );
 };

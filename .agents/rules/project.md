@@ -8,20 +8,19 @@
 
 ---
 
-## CRITICAL RULE: Implementation Plan Always — No Exceptions
+## CRITICAL RULE: Implementation Plan Workflow for Build & File Changes
 
-> **FOR EVERY USER PROMPT, regardless of size, complexity, or simplicity:**
-> 1. Create or update `implementation_plan.md` with a detailed plan
-> 2. Present it to the user for review
-> 3. **STOP and wait** for explicit user approval or modification instructions
-> 4. Only begin execution when the user says **"start working"** or gives explicit approval
+> **1. BUILD & FILE CHANGE REQUESTS (Build, Edit, Refactor, Delete):**
+> - Create or update `implementation_plan.md` with a detailed technical plan.
+> - Present it to the user for review.
+> - **STOP and wait** for explicit user approval (*"yes"*, *"start working"*, or explicit approval).
+> - Only begin file edits and execution after approval is received.
 >
-> **ONE EXCEPTION ONLY**: If the user's message itself contains the phrase **"start working"**,
-> skip the plan and begin execution immediately.
+> **2. INFORMATIONAL QUESTIONS & INQUIRIES (Questions, Status, Explanations):**
+> - Answer the user **directly in chat** without creating an `implementation_plan.md` artifact or waiting for approval.
 >
-> **This rule overrides everything else.** No prompt is too small or too trivial.
-> Even a one-line request gets a plan first.
-> No assumptions. No "I'll just do it quickly." Always plan → always wait → always execute on approval.
+> **ONE EXCEPTION FOR BUILD REQUESTS**: If the user's build request itself contains the phrase **"start working"**,
+> skip the plan creation and begin execution immediately.
 
 ---
 

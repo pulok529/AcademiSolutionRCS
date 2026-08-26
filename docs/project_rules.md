@@ -18,6 +18,19 @@
 
 ---
 
+## 1.1. AI Agent Implementation Plan Governance
+
+- **BUILD & FILE CHANGE REQUESTS (Build, Edit, Refactor, Delete)**:
+  - Create or update `implementation_plan.md` with a detailed technical plan.
+  - Present it to the user for review.
+  - **STOP and wait** for explicit user approval (*"yes"*, *"start working"*, or explicit approval).
+  - Only begin file edits and execution after approval is received.
+
+- **INFORMATIONAL QUESTIONS & INQUIRIES (Questions, Status, Explanations)**:
+  - Answer the user **directly in chat** without creating an `implementation_plan.md` artifact or waiting for approval.
+
+---
+
 ## 2. Git Workflow
 
 ### Branch Strategy

@@ -39,9 +39,6 @@ For every page in the Accounts module, data travels through 5 discrete layers:
 | `tvAccounts` | TreeView / Grid | COA Hierarchy Tree | Visual tree view of entire school chart of accounts | Expandable tree control |
 
 #### 2. Page Functions & Code Logic
-- **`Page_Load(object sender, EventArgs e)`**:
-  - Checks user session.
-  - If `!IsPostBack`, calls `BindAccountTypes()` and `LoadAccountTree()`.
 - **`btnSaveAcc_Click(object sender, EventArgs e)`**:
   - Validates duplicate `AccountCode`.
   - Instantiates `ChartOfAccountsDAO` and populates `AccountCode`, `AccountHeadTitle`, `AccTypeID`, `ParentHeadID`, `IsActive`.
@@ -51,36 +48,7 @@ For every page in the Accounts module, data travels through 5 discrete layers:
 ```
 ChartOfAccounts.aspx (.cs) ➔ ChartOfAccountsBLL.cs ➔ ChartOfAccountsDAL.cs ➔ ChartOfAccounts.cs ➔ MSSQL: tbl_ChartOfAccounts
 ```
-- **UI Class**: `Solution.Web.Accounts_UI.ChartOfAccounts`
-- **BLL Class & Method**: `Library.BLL.Accounts_BLL.ChartOfAccountsBLL.InsertChartOfAccounts(ChartOfAccountsInfo coa)`
-- **DAL Class & Method**: `Library.DAL.Accounts_DAL.ChartOfAccountsDAL.InsertChartOfAccounts(ChartOfAccountsInfo coa)`
-- **DAO Entity**: `Library.DAO.Accounts_Entities.ChartOfAccountsInfo` (`int AccountID`, `string AccountCode`, `string AccountHeadTitle`, `int AccTypeID`, `int ParentHeadID`, `bool IsActive`).
 - **MSSQL Table**: `tbl_ChartOfAccounts` (`AccountID` INT PK IDENTITY, `AccountCode` VARCHAR(20) UNIQUE, `AccountHeadTitle` NVARCHAR(150), `AccTypeID` INT FK, `ParentHeadID` INT FK, `IsActive` BIT, `CreatedDate` DATETIME).
-
----
-
-### 2.2 `CashAccountEntry.aspx` & `BankAccountEntry.aspx` (Cash & Bank Master)
-
-#### 1. UI Elements, Purpose & Effects
-| Control ID | Type | Caption / Label | Purpose & User Operation | Client/Server Effect |
-|---|---|---|---|---|
-| `txtAccountName` | TextBox | Cash / Bank Account Name | Name of bank (e.g. Sonali Bank, Dutch Bangla Bank, Main Cash Counter) | Text input |
-| `txtAccountNumber` | TextBox | Bank Account No | Bank account number | Input text |
-| `txtBranchName` | TextBox | Branch Name | Bank branch location | Text input |
-| `txtOpeningBalance` | TextBox | Opening Balance | Initial starting balance | Numeric input |
-| `btnSaveBank` | Button | Save Bank Account | Registers cash/bank account in GL | Inserts record |
-
-#### 2. Page Functions & Code Logic
-- **`btnSaveBank_Click(object sender, EventArgs e)`**:
-  - Instantiates `BankAccount` DAO entity.
-  - Calls `BankAccountBLL.InsertBankAccount(bankDAO)`.
-  - Automatically creates corresponding GL Ledger Head in `tbl_ChartOfAccounts`.
-
-#### 3. Full-Stack Data Flow Trace
-```
-BankAccountEntry.aspx (.cs) ➔ BankAccountBLL.cs ➔ BankAccountDAL.cs ➔ BankAccount.cs ➔ MSSQL: tbl_BankAccount
-```
-- **MSSQL Table**: `tbl_BankAccount` (`BankAccID` INT PK IDENTITY, `AccountName` NVARCHAR(100), `AccountNumber` VARCHAR(50), `BranchName` NVARCHAR(100), `OpeningBalance` DECIMAL(12,2), `CurrentBalance` DECIMAL(12,2)).
 
 ---
 
@@ -110,87 +78,76 @@ BankAccountEntry.aspx (.cs) ➔ BankAccountBLL.cs ➔ BankAccountDAL.cs ➔ Bank
   - Inserts master voucher record into `tbl_VoucherMaster`.
   - Loops through ledger line items and calls `VoucherBLL.InsertVoucherDetails(voucherDetailDAO)`.
   - Updates account balances in `tbl_ChartOfAccounts` and posts to `tbl_GeneralLedger`.
-  - Commits transaction.
 
 #### 3. Full-Stack Data Flow Trace
 ```
 VoucherEntry.aspx (.cs) ➔ VoucherBLL.cs ➔ VoucherDAL.cs ➔ VoucherEntryBLL.cs ➔ MSSQL: tbl_VoucherMaster / tbl_VoucherDetails / tbl_GeneralLedger
 ```
-- **BLL Class & Method**: `VoucherBLL.InsertVoucherMaster(VoucherMaster master)`
-- **DAL Class & Method**: `VoucherDAL.InsertVoucherMaster(VoucherMaster master, SqlTransaction trans)`
-- **DAO Entities**: `VoucherMaster`, `VoucherDetails`.
-- **MSSQL Database Tables**:
-  - `tbl_VoucherMaster` (`VoucherID` INT PK IDENTITY, `VoucherNo` VARCHAR(30) UNIQUE, `VoucherType` VARCHAR(20), `VoucherDate` DATETIME, `TotalAmount` DECIMAL(12,2), `Narration` NVARCHAR(300), `CreatedBy` VARCHAR(50), `IsApproved` BIT).
-  - `tbl_VoucherDetails` (`DetailID` INT PK IDENTITY, `VoucherID` INT FK, `AccountID` INT FK, `DebitAmount` DECIMAL(12,2), `CreditAmount` DECIMAL(12,2), `Particulars` NVARCHAR(200)).
-  - `tbl_GeneralLedger` (`LedgerID` INT PK IDENTITY, `VoucherID` INT FK, `AccountID` INT FK, `PostingDate` DATETIME, `Debit` DECIMAL(12,2), `Credit` DECIMAL(12,2), `Balance` DECIMAL(12,2)).
+- **MSSQL Database Tables**: `tbl_VoucherMaster`, `tbl_VoucherDetails`, `tbl_GeneralLedger`.
 
 ---
 
-### 3.2 `DailyExpensesEntry.aspx` & `DailyIncomeEntry.aspx` (Daily Petty Cash Operations)
+### 3.2 `BankBookEntry.aspx` & `BankBookEntry.aspx.cs` (Bank Reconciliation & Book Statement)
 
 #### 1. UI Elements, Purpose & Effects
 | Control ID | Type | Caption / Label | Purpose & User Operation | Client/Server Effect |
 |---|---|---|---|---|
-| `txtExpenseDate` | TextBox | Date | Date of expenditure | Calendar extender |
-| `ddlExpenseHead` | DropDownList | Expense Category | Electricity Bill, Office Supplies, Repair, Tea/Entertainment | Dropdown selection |
-| `txtAmount` | TextBox | Amount | Expense amount paid | Numeric decimal input |
-| `ddlPaymentMode` | DropDownList | Paid From | Main Cash / Bank Account | Source account dropdown |
-| `txtRemarks` | TextBox | Note / Remarks | Purpose of expense | Text input |
-| `btnSaveExpense` | Button | Record Expense | Posts daily expense voucher | Inserts expense record & updates Cash/Bank balance |
+| `ddlBankAccount` | DropDownList | Bank Account | Select bank account | Filter dropdown |
+| `txtChequeNo` | TextBox | Cheque Number | Check number for deposit / payment | Text input |
+| `txtChequeDate` | TextBox | Cheque Date | Date on check | Calendar extender |
+| `ddlStatus` | DropDownList | Clearing Status | Cleared / Uncleared / Bounced | Select status |
+| `btnReconcile` | Button | Update Bank Book | Updates bank reconciliation status | Updates `tbl_BankBook` |
 
 #### 2. Page Functions & Code Logic
-- **`btnSaveExpense_Click(object sender, EventArgs e)`**:
-  - Calls `DailyExpensesBLL.InsertDailyExpenses(expenseDAO)`.
-  - Automatically posts a Debit Payment Voucher (`DV-XXXX`) to `tbl_VoucherMaster` and deducts cash from `tbl_CashAccount`.
-
-#### 3. Full-Stack Data Flow Trace
-```
-DailyExpensesEntry.aspx (.cs) ➔ DailyExpensesBLL.cs ➔ DailyExpensesDAL.cs ➔ MSSQL: tbl_DailyExpenses / tbl_VoucherMaster
-```
-- **MSSQL Table**: `tbl_DailyExpenses` (`ExpenseID` INT PK IDENTITY, `ExpenseDate` DATE, `ExpenseHeadID` INT FK, `Amount` DECIMAL(10,2), `PaidFromAccID` INT FK, `Remarks` NVARCHAR(200)).
+- **`btnReconcile_Click(object sender, EventArgs e)`**:
+  - Calls `BankBookBLL.UpdateBankReconciliation(bankBookDAO)`.
+  - If status is set to `Cleared`, updates `tbl_BankAccount.CurrentBalance`.
 
 ---
 
-### 3.3 `BalanceTransferEntry.aspx` & `BalanceTransferEdit.aspx` (Fund Transfers)
+### 3.3 `LiabilityExpenceEntry.aspx` & `LiabilityExpensesEdit.aspx` (Accrued Liabilities & Vendor Payables)
 
 #### 1. UI Elements, Purpose & Effects
 | Control ID | Type | Caption / Label | Purpose & User Operation | Client/Server Effect |
 |---|---|---|---|---|
-| `ddlFromAccount` | DropDownList | Source Account | Cash Counter / Bank Account | Source account |
-| `ddlToAccount` | DropDownList | Destination Account | Bank Account / Main Cash | Destination account |
-| `txtTransferAmount` | TextBox | Transfer Amount | Amount to transfer | Numeric decimal input |
-| `txtTransferDate` | TextBox | Transfer Date | Date of fund transfer | Calendar extender |
-| `btnExecuteTransfer` | Button | Execute Fund Transfer | Moves funds between accounts | Posts Contra Voucher (`CV-XXXX`) |
+| `ddlVendor` | DropDownList | Vendor / Supplier | Select vendor for payable liability | Dropdown selection |
+| `ddlLiabilityHead` | DropDownList | Liability Account | Accrued Rent, Audit Fees, Supplier Payable | Dropdown from COA |
+| `txtAmount` | TextBox | Payable Amount | Accrued liability amount | Numeric input |
+| `txtDueDate` | TextBox | Payment Due Date | Expected payment deadline | Calendar extender |
+| `btnSaveLiability` | Button | Post Liability | Posts accrued liability voucher | Inserts liability record |
 
 #### 2. Page Functions & Code Logic
-- **`btnExecuteTransfer_Click(object sender, EventArgs e)`**:
-  - Validates source account has sufficient balance (`FromAcc.CurrentBalance >= TransferAmount`).
-  - Calls `BalanceTransferBLL.InsertBalanceTransfer(transferDAO)`.
-  - Executes SQL transaction: Deducts `FromAccount`, Adds to `ToAccount`, posts Contra Voucher (`CV-XXXX`).
+- **`btnSaveLiability_Click(object sender, EventArgs e)`**:
+  - Instantiates `LiabilityExpenses` DAO entity.
+  - Calls `LiabilityExpensesBLL.InsertLiabilityExpenses(liabilityDAO)`.
+  - Posts Journal Voucher (`JV-XXXX`) crediting `tbl_Liability` and debiting Expense Account.
 
-#### 3. Full-Stack Data Flow Trace
-```
-BalanceTransferEntry.aspx (.cs) ➔ BalanceTransferBLL.cs ➔ BalanceTransferDAL.cs ➔ MSSQL: tbl_BalanceTransfer
-```
-- **MSSQL Table**: `tbl_BalanceTransfer` (`TransferID` INT PK IDENTITY, `TransferNo` VARCHAR(30), `FromAccID` INT FK, `ToAccID` INT FK, `Amount` DECIMAL(12,2), `TransferDate` DATETIME, `CreatedBy` VARCHAR(50)).
+---
+
+### 3.4 `FeeCollectionStartStopEntry.aspx` (Counter Lock & Collection Control)
+
+#### 1. UI Elements, Purpose & Effects
+| Control ID | Type | Caption / Label | Purpose & User Operation | Client/Server Effect |
+|---|---|---|---|---|
+| `ddlSession` | DropDownList | Session | Academic year | Filter dropdown |
+| `ddlMonth` | DropDownList | Fee Month | Select month to open/close fee collection | Select month |
+| `rblStatus` | RadioButtonList | Collection Status | Open (Start) / Closed (Stop) | Radio selection |
+| `btnSaveStatus` | Button | Update Control Lock | Enables/disables POS fee collection counter | Updates `tbl_FeeCollectionStartStop` |
+
+#### 2. Page Functions & Code Logic
+- **`btnSaveStatus_Click(object sender, EventArgs e)`**:
+  - Updates `tbl_FeeCollectionStartStop` setting `IsCollectionOpen = (rblStatus.SelectedValue == "Open")`.
+  - If `IsCollectionOpen == false`, `StuFeeCollection.aspx` blocks counter cashiers from accepting payments for that month.
 
 ---
 
 ## 4. Accounts Data Migration Strategy
 
-### Source Legacy Database ➔ Target Modern Microservice DB Mapping
-
-| Legacy MSSQL Table (`Bornomala_School_DB`) | Target Microservice Table (`accounts_db`) | Migration Transformation & Integrity Rules |
+| Legacy MSSQL Table | Target Microservice Table (`accounts_db`) | Migration Rules |
 |---|---|---|
-| `tbl_ChartOfAccounts` | `accounts_db.dbo.Accounts` | Preserve account codes and parent-child hierarchy. |
-| `tbl_VoucherMaster` | `accounts_db.dbo.Vouchers` | Transfer historical payment, receipt, and journal vouchers. |
-| `tbl_VoucherDetails` | `accounts_db.dbo.VoucherLineItems` | Transfer line-item debit/credit transactions for financial audit compliance. |
-| `tbl_BankAccount` | `accounts_db.dbo.BankAccounts` | Transfer bank account credentials, branch codes, and opening balances. |
-| `tbl_DailyExpenses` | `accounts_db.dbo.Expenses` | Map historical expense records. |
-
----
-
-## 5. Verification & Sign-Off Criteria
-
-- **Functional Coverage**: All ~90 Accounts pages, C# event handlers, and BLL methods cataloged with 100% data flow accuracy.
-- **Double-Entry Compliance**: Guaranteed zero loss of financial transaction rules, double-entry validation, or accounting ledger integrity.
+| `tbl_ChartOfAccounts` | `accounts_db.dbo.Accounts` | Preserve GL codes and parent-child hierarchy. |
+| `tbl_VoucherMaster` | `accounts_db.dbo.Vouchers` | Transfer payment, receipt, and journal vouchers. |
+| `tbl_VoucherDetails` | `accounts_db.dbo.VoucherLineItems` | Transfer line-item debit/credit transactions. |
+| `tbl_BankAccount` | `accounts_db.dbo.BankAccounts` | Transfer bank balances and branch codes. |
+| `tbl_BankBook` | `accounts_db.dbo.BankReconciliations` | Transfer check clearing history. |
+| `tbl_LiabilityExpenses` | `accounts_db.dbo.VendorPayables` | Transfer accrued supplier liabilities. |

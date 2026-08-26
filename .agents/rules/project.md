@@ -4,6 +4,7 @@
 - **Project**: Academi School Management System
 - **Repo**: https://github.com/pulok529/AcademiSolutionRCS
 - **Tech Stack Reference**: `docs/architecture/tech_stack.md`
+- **Domain Business Rules Reference**: `docs/architecture/business_logic_rules.md`
 - **Project Rules Reference**: `docs/project_rules.md`
 
 ---
